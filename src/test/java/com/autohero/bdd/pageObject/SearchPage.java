@@ -115,6 +115,7 @@ public class SearchPage extends BasePage {
     public void collectSearchElementsData() {
         boolean hasMore = true;
         while(hasMore) {
+            waitUntilContentLoaded();
             List<Double> priceListNext = collectPrices();
             List<Integer> specListNext = collectFirstRegistrationData();
             pricesList.addAll(priceListNext);
@@ -185,6 +186,10 @@ public class SearchPage extends BasePage {
 
     private void setChromeDriverProperty() {
         System.setProperty("webdriver.chrome.driver", getClass().getResource("/drivers/chrome/").getPath() + "chromedriver_win");
+    }
+
+    private void waitUntilContentLoaded() {
+        getWaiter(driver).until(ExpectedConditions.attributeToBeNotEmpty(driver.findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
     }
 
     @Override
