@@ -141,15 +141,15 @@
             </properties>
         </profile>
         <profile>
-            <id>ie</id>
+            <id>edge</id>
             <activation>
                 <property>
                     <name>browser</name>
-                    <value>ie</value>
+                    <value>edge</value>
                 </property>
             </activation>
             <properties>
-                <selenium.browser>ie</selenium.browser>
+                <selenium.browser>edge</selenium.browser>
             </properties>
         </profile>
     </profiles>

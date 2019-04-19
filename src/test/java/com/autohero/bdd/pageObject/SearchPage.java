@@ -8,7 +8,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.Sleeper;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -107,6 +109,7 @@ public class SearchPage extends BasePage {
     private List<Double> collectPrices(){
         List<Double> pricesList1 = new ArrayList<>();
         List<WebElement> searchResultsList = getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH));
+        waitUntilContentLoaded();
         for (int i = 0; i < searchResultsList.size(); i++) {
             pricesList1.add(i, Double.parseDouble(searchResultsList.get(i).getAttribute("innerHTML").substring(0, searchResultsList.get(i).getAttribute("innerHTML").indexOf("&"))));
         }
@@ -116,7 +119,6 @@ public class SearchPage extends BasePage {
     public void collectSearchElementsData() {
         boolean hasMore = true;
         while(hasMore) {
-            waitUntilContentLoaded();
             List<Double> priceListNext = collectPrices();
             List<Integer> specListNext = collectFirstRegistrationData();
             pricesList.addAll(priceListNext);
@@ -186,7 +188,20 @@ public class SearchPage extends BasePage {
     }
 
     private void waitUntilContentLoaded() {
-        waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
+        if (getProperties().getProperty("sys.selenium.browser").equals("firefox")){
+            try {
+                Sleeper.SYSTEM_SLEEPER.sleep(Duration.ofSeconds(2));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
+            waiter(getDriver()).until(ExpectedConditions.not(ExpectedConditions.stalenessOf(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0))));
+        }
+
+        if (getProperties().getProperty("sys.selenium.browser").equals("chrome") || getProperties().getProperty("sys.selenium.browser").equals("edge")){
+            waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
+        }
+
     }
 
     @Override

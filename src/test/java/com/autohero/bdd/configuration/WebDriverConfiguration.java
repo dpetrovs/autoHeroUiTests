@@ -2,6 +2,7 @@ package com.autohero.bdd.configuration;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
@@ -38,15 +39,9 @@ public class WebDriverConfiguration {
                 setChromePath();
                 driver = new ChromeDriver();
                 break;
-            case "ie" :
-                setIEPath();
-                InternetExplorerOptions options = new InternetExplorerOptions();
-                options.ignoreZoomSettings();
-                options.introduceFlakinessByIgnoringSecurityDomains();
-                options.requireWindowFocus();
-                InternetExplorerDriver ieDriver = new InternetExplorerDriver(options);
-                ieDriver.navigate().to("javascript:document.getElementById('overridelink').click()");
-                driver = ieDriver;
+            case "edge" :
+                setEdgePath();
+                driver = new EdgeDriver();
                 break;
             default :
                 setChromePath();
@@ -58,12 +53,12 @@ public class WebDriverConfiguration {
             System.setProperty("webdriver.chrome.driver", chromePath());
     }
 
-    private void setIEPath() {
-            System.setProperty("webdriver.ie.driver", getClass().getResource("/drivers/ie/").getPath() + "ie.exe");
+    private void setFireFoxPath() {
+            System.setProperty("webdriver.gecko.driver", getClass().getResource("/drivers/firefox/").getPath() + "geckodriver.exe");
     }
 
-    private void setFireFoxPath() {
-            System.setProperty("webdriver.gecko.driver", getClass().getResource("/drivers/firefox/").getPath() + "firefoxdriver_win");
+    private void setEdgePath() {
+        System.setProperty("webdriver.edge.driver", getClass().getResource("/drivers/edge/").getPath() + "MicrosoftWebDriver.exe");
     }
 
     private String chromePath() {
@@ -84,7 +79,7 @@ public class WebDriverConfiguration {
         driver.get(APP_URL);
     }
 
-    private Properties getProperties() {
+    protected Properties getProperties() {
         Properties properties = new Properties();
         try (InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(resourceAsStream);
