@@ -21,12 +21,12 @@ public class FilterStepDefs {
     SearchPage searchPage = new SearchPage();
 
     @Before
-    public void before(Scenario scenario){
+    public void before(Scenario scenario) {
         searchPage.launchBrowser();
     }
 
     @After
-    public void after(Scenario scenario){
+    public void after(Scenario scenario) {
         searchPage.driverQuit();
     }
 
@@ -45,14 +45,13 @@ public class FilterStepDefs {
 
     @And("^user select \"([^\"]*)\" option from sort drop-down list$")
     public void userSelectOptionFromSortDropDownList(SortOptions selectOption) throws Throwable {
-       searchPage.selectSortItemByTest(selectOption);
-       searchPage.waitLoadingBanner();
+        searchPage.selectSortItemByTest(selectOption);
+        searchPage.waitLoadingBanner();
     }
 
     @And("^all cars are sorted by price \"([^\"]*)\"$")
     public void allCarsAreSortedByPrice(PriceOrder priceOorder) throws Throwable {
         Assert.assertTrue(searchPage.validatePriceOrder(priceOorder));
-
     }
 
     @Then("^all cars are filtered by first registration since (\\d+)$")

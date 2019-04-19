@@ -3,18 +3,12 @@ package com.autohero.bdd.pageObject;
 import com.autohero.bdd.enums.PriceOrder;
 import com.autohero.bdd.enums.SortOptions;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.Sleeper;
-
+import org.openqa.selenium.support.ui.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class SearchPage extends BasePage {
 
@@ -30,7 +24,6 @@ public class SearchPage extends BasePage {
     private static final String SEARCH_RESULTS_TABLE_FIRST_REG_DATE_XPATH = SEARCH_RESULTS_TABLE_XPATH + "/descendant::ul[@data-qa-selector='spec-list']/li[:specElementNumber]";
     private List<Double> pricesList = new ArrayList<>();
     private List<Integer> firstRegistrationYearList = new ArrayList<>();
-
 
     public void launchBrowser() {
         webDriverSelection();
@@ -73,25 +66,25 @@ public class SearchPage extends BasePage {
         getSortDropDown().click();
         switch (value) {
             case PUBLISHED_AT_DESC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","publishedAt.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "publishedAt.desc"))).click();
                 break;
             case OFFER_PRICE_AMOUNT_MINOR_UNITS_ASC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","offerPrice.amountMinorUnits.asc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "offerPrice.amountMinorUnits.asc"))).click();
                 break;
             case OFFER_PRICE_AMOUNT_MINOR_UNITS_DESC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","offerPrice.amountMinorUnits.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "offerPrice.amountMinorUnits.desc"))).click();
                 break;
             case MILEAGE_DISTANCE_ASC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","mileage.distance.asc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "mileage.distance.asc"))).click();
                 break;
             case MILEAGE_DISTANCE_DESC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","mileage.distance.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "mileage.distance.desc"))).click();
                 break;
             case MANUFACTURER_ASC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","manufacturer.asc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "manufacturer.asc"))).click();
                 break;
             case MANUFACTURER_DESC:
-                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","manufacturer.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value", "manufacturer.desc"))).click();
                 break;
         }
     }
@@ -106,10 +99,10 @@ public class SearchPage extends BasePage {
         return result;
     }
 
-    private List<Double> collectPrices(){
+    private List<Double> collectPrices() {
+        waitUntilContentLoaded();
         List<Double> pricesList1 = new ArrayList<>();
         List<WebElement> searchResultsList = getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH));
-        waitUntilContentLoaded();
         for (int i = 0; i < searchResultsList.size(); i++) {
             pricesList1.add(i, Double.parseDouble(searchResultsList.get(i).getAttribute("innerHTML").substring(0, searchResultsList.get(i).getAttribute("innerHTML").indexOf("&"))));
         }
@@ -118,7 +111,7 @@ public class SearchPage extends BasePage {
 
     public void collectSearchElementsData() {
         boolean hasMore = true;
-        while(hasMore) {
+        while (hasMore) {
             List<Double> priceListNext = collectPrices();
             List<Integer> specListNext = collectFirstRegistrationData();
             pricesList.addAll(priceListNext);
@@ -126,7 +119,7 @@ public class SearchPage extends BasePage {
             priceListNext.clear();
             specListNext.clear();
             hasMore = isPageNumberAvailable(getCurrentPageNumber() + 1);
-            if (hasMore){
+            if (hasMore) {
                 goToNextPage();
                 waitLoadingBanner();
             }
@@ -183,30 +176,28 @@ public class SearchPage extends BasePage {
         return getPaging().getCurrentPageNumber();
     }
 
-    protected  Paging getPaging() {
+    protected Paging getPaging() {
         return new Paging(getDriver().findElement(By.xpath("//ul[@class='pagination']")));
     }
 
     private void waitUntilContentLoaded() {
-        if (getProperties().getProperty("sys.selenium.browser").equals("firefox")){
+        if (getProperties().getProperty("sys.selenium.browser").equals("firefox")) {
             try {
-                Sleeper.SYSTEM_SLEEPER.sleep(Duration.ofSeconds(2));
+                Sleeper.SYSTEM_SLEEPER.sleep(Duration.ofSeconds(1));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
             waiter(getDriver()).until(ExpectedConditions.not(ExpectedConditions.stalenessOf(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0))));
-        }
-
-        if (getProperties().getProperty("sys.selenium.browser").equals("chrome") || getProperties().getProperty("sys.selenium.browser").equals("edge")){
             waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
         }
 
+        if (getProperties().getProperty("sys.selenium.browser").equals("chrome") || getProperties().getProperty("sys.selenium.browser").equals("edge")) {
+            waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
+        }
     }
 
     @Override
     public void waitPageLoaded() {
         waiter(getDriver()).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[text() = 'Autosuche']")));
     }
-
 }
