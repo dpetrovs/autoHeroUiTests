@@ -57,6 +57,22 @@
     </dependencies>
 
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <excludes>
+                    <exclude>drivers</exclude>
+                </excludes>
+                <includes>
+                    <include>application.properties</include>
+                </includes>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -97,4 +113,44 @@
             </plugin>
         </plugins>
   </build>
+    <profiles>
+        <profile>
+        <id>chrome</id>
+            <activation>
+                <!-- this profile is active by default -->
+                <property>
+                    <name>browser</name>
+                    <value>chrome</value>
+                </property>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+                <properties>
+                    <selenium.browser>chrome</selenium.browser>
+                </properties>
+        </profile>
+        <profile>
+            <id>firefox</id>
+            <activation>
+                <property>
+                    <name>browser</name>
+                    <value>firefox</value>
+                </property>
+            </activation>
+            <properties>
+                <selenium.browser>firefox</selenium.browser>
+            </properties>
+        </profile>
+        <profile>
+            <id>ie</id>
+            <activation>
+                <property>
+                    <name>browser</name>
+                    <value>ie</value>
+                </property>
+            </activation>
+            <properties>
+                <selenium.browser>ie</selenium.browser>
+            </properties>
+        </profile>
+    </profiles>
 </project>

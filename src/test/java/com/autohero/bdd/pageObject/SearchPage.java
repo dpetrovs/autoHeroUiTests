@@ -1,9 +1,9 @@
 package com.autohero.bdd.pageObject;
 
-import com.autohero.bdd.configuration.BasePage;
 import com.autohero.bdd.enums.PriceOrder;
 import com.autohero.bdd.enums.SortOptions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,10 +12,11 @@ import org.openqa.selenium.support.ui.Select;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class SearchPage extends BasePage {
 
-    private static final String APP_URL = "https://www.autohero.com/de/search";
+    private final String APP_URL = getAppUrl();
     private static final String FILTER_XPATH = "//div[@data-qa-selector=':filterName']";
     private static final String SELECT_XPATH = "//select[@data-qa-selector='select'][@name=':selectItemName']";
     private static final String SORT_OPTION_XPATH = SELECT_XPATH.replace(":selectItemName", "sort") + "/option[@data-qa-selector-value=':value']";
@@ -28,22 +29,22 @@ public class SearchPage extends BasePage {
     private List<Double> pricesList = new ArrayList<>();
     private List<Integer> firstRegistrationYearList = new ArrayList<>();
 
+
     public void launchBrowser() {
-        setChromeDriverProperty();
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
+        webDriverSelection();
+        driverBaseSteps(getDriver());
     }
 
     public void openURL() {
-        driver.get(APP_URL);
+        getDriver().get(APP_URL);
     }
 
     public void driverQuit() {
-        driver.quit();
+        getDriver().quit();
     }
 
     private WebElement getRegistrationYearItem() {
-        return driver.findElement(By.xpath(REGISTRATION_YEAR_XPATH));
+        return getDriver().findElement(By.xpath(REGISTRATION_YEAR_XPATH));
     }
 
     private Select getRegistrationYearDropDownSelect() {
@@ -51,11 +52,11 @@ public class SearchPage extends BasePage {
     }
 
     private WebElement getRegistrationYearDropDown() {
-        return driver.findElement(By.xpath(REGISTRATION_YEAR_DROPDOWN_XPATH));
+        return getDriver().findElement(By.xpath(REGISTRATION_YEAR_DROPDOWN_XPATH));
     }
 
     private WebElement getSortDropDown() {
-        return driver.findElement(By.xpath(SORT_DROPDOWN_XPATH));
+        return getDriver().findElement(By.xpath(SORT_DROPDOWN_XPATH));
     }
 
     public void selectRegistrationYearByText(Integer value) {
@@ -70,31 +71,31 @@ public class SearchPage extends BasePage {
         getSortDropDown().click();
         switch (value) {
             case PUBLISHED_AT_DESC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","publishedAt.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","publishedAt.desc"))).click();
                 break;
             case OFFER_PRICE_AMOUNT_MINOR_UNITS_ASC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","offerPrice.amountMinorUnits.asc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","offerPrice.amountMinorUnits.asc"))).click();
                 break;
             case OFFER_PRICE_AMOUNT_MINOR_UNITS_DESC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","offerPrice.amountMinorUnits.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","offerPrice.amountMinorUnits.desc"))).click();
                 break;
             case MILEAGE_DISTANCE_ASC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","mileage.distance.asc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","mileage.distance.asc"))).click();
                 break;
             case MILEAGE_DISTANCE_DESC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","mileage.distance.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","mileage.distance.desc"))).click();
                 break;
             case MANUFACTURER_ASC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","manufacturer.asc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","manufacturer.asc"))).click();
                 break;
             case MANUFACTURER_DESC:
-                driver.findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","manufacturer.desc"))).click();
+                getDriver().findElement(By.xpath(SORT_OPTION_XPATH.replace(":value","manufacturer.desc"))).click();
                 break;
         }
     }
 
     private List<Integer> collectFirstRegistrationData() {
-        List<WebElement> resultElements = driver.findElements(By.xpath(SEARCH_RESULTS_TABLE_FIRST_REG_DATE_XPATH.replace(":specElementNumber", "1")));
+        List<WebElement> resultElements = getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_FIRST_REG_DATE_XPATH.replace(":specElementNumber", "1")));
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < resultElements.size(); i++) {
             int date = Integer.parseInt(resultElements.get(i).getAttribute("innerText").substring(resultElements.get(i).getAttribute("innerText").indexOf("/") + 1, resultElements.get(i).getAttribute("innerText").length()));
@@ -105,7 +106,7 @@ public class SearchPage extends BasePage {
 
     private List<Double> collectPrices(){
         List<Double> pricesList1 = new ArrayList<>();
-        List<WebElement> searchResultsList = driver.findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH));
+        List<WebElement> searchResultsList = getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH));
         for (int i = 0; i < searchResultsList.size(); i++) {
             pricesList1.add(i, Double.parseDouble(searchResultsList.get(i).getAttribute("innerHTML").substring(0, searchResultsList.get(i).getAttribute("innerHTML").indexOf("&"))));
         }
@@ -181,20 +182,16 @@ public class SearchPage extends BasePage {
     }
 
     protected  Paging getPaging() {
-        return new Paging(driver.findElement(By.xpath("//ul[@class='pagination']")));
-    }
-
-    private void setChromeDriverProperty() {
-        System.setProperty("webdriver.chrome.driver", getClass().getResource("/drivers/chrome/").getPath() + "chromedriver_win");
+        return new Paging(getDriver().findElement(By.xpath("//ul[@class='pagination']")));
     }
 
     private void waitUntilContentLoaded() {
-        getWaiter(driver).until(ExpectedConditions.attributeToBeNotEmpty(driver.findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
+        waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
     }
 
     @Override
     public void waitPageLoaded() {
-        getWaiter(driver).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[text() = 'Autosuche']")));
+        waiter(getDriver()).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//h1[text() = 'Autosuche']")));
     }
 
 }
