@@ -187,11 +187,14 @@ public class SearchPage extends BasePage {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            waitLoadingBanner();
             waiter(getDriver()).until(ExpectedConditions.not(ExpectedConditions.stalenessOf(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0))));
             waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
         }
 
         if (getProperties().getProperty("sys.selenium.browser").equals("chrome") || getProperties().getProperty("sys.selenium.browser").equals("edge")) {
+            waitLoadingBanner();
+            waiter(getDriver()).until(ExpectedConditions.not(ExpectedConditions.stalenessOf(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0))));
             waiter(getDriver()).until(ExpectedConditions.attributeToBeNotEmpty(getDriver().findElements(By.xpath(SEARCH_RESULTS_TABLE_PRICE_XPATH)).get(0), "innerText"));
         }
     }
